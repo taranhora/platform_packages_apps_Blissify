@@ -58,6 +58,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
+import com.bliss.support.preferences.CustomSeekBarPreference;
+
 @SearchIndexable
 public class Lockscreen extends SettingsPreferenceFragment implements
         OnPreferenceChangeListener, Indexable {
@@ -66,11 +68,15 @@ public class Lockscreen extends SettingsPreferenceFragment implements
     private static final String LOCKSCREEN_FOD_CATEGORY = "lockscreen_fod_category";
     private static final String LOCK_CLOCK_FONTS = "lock_clock_fonts";
     private static final String LOCK_DATE_FONTS = "lock_date_fonts";
+    private static final String CLOCK_FONT_SIZE  = "lockclock_font_size";
+    private static final String DATE_FONT_SIZE  = "lockdate_font_size";
 
     private ListPreference mLockClockFonts;
     private ContentResolver mResolver;
     private Preference FODSettings;
     private ListPreference mLockDateFonts;
+    private CustomSeekBarPreference mClockFontSize;
+    private CustomSeekBarPreference mDateFontSize;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -96,6 +102,18 @@ public class Lockscreen extends SettingsPreferenceFragment implements
                 getContentResolver(), Settings.System.LOCK_DATE_FONTS, 32)));
         mLockDateFonts.setSummary(mLockDateFonts.getEntry());
         mLockDateFonts.setOnPreferenceChangeListener(this);
+
+        // Lock Clock Size
+        mClockFontSize = (CustomSeekBarPreference) findPreference(CLOCK_FONT_SIZE);
+        mClockFontSize.setValue(Settings.System.getInt(getContentResolver(),
+                Settings.System.LOCKCLOCK_FONT_SIZE, 78));
+        mClockFontSize.setOnPreferenceChangeListener(this);
+
+        // Lock Date Size
+        mDateFontSize = (CustomSeekBarPreference) findPreference(DATE_FONT_SIZE);
+        mDateFontSize.setValue(Settings.System.getInt(getContentResolver(),
+                Settings.System.LOCKDATE_FONT_SIZE, 18));
+        mDateFontSize.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -112,6 +130,16 @@ public class Lockscreen extends SettingsPreferenceFragment implements
                     Integer.valueOf((String) objValue));
             mLockDateFonts.setValue(String.valueOf(objValue));
             mLockDateFonts.setSummary(mLockDateFonts.getEntry());
+            return true;
+        } else if (preference == mClockFontSize) {
+            int top = (Integer) objValue;
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.LOCKCLOCK_FONT_SIZE, top*1);
+            return true;
+        } else if (preference == mDateFontSize) {
+            int top = (Integer) objValue;
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.LOCKDATE_FONT_SIZE, top*1);
             return true;
         }
         return false;

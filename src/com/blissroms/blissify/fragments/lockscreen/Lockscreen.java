@@ -65,9 +65,12 @@ public class Lockscreen extends SettingsPreferenceFragment implements
     private static final String LOCKSCREEN_CATEGORY = "lockscreen_category";
     private static final String LOCKSCREEN_FOD_CATEGORY = "lockscreen_fod_category";
     private static final String LOCK_CLOCK_FONTS = "lock_clock_fonts";
+    private static final String LOCK_DATE_FONTS = "lock_date_fonts";
+
     private ListPreference mLockClockFonts;
     private ContentResolver mResolver;
     private Preference FODSettings;
+    private ListPreference mLockDateFonts;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -87,6 +90,12 @@ public class Lockscreen extends SettingsPreferenceFragment implements
         mLockClockFonts.setSummary(mLockClockFonts.getEntry());
         mLockClockFonts.setOnPreferenceChangeListener(this);
 
+        // Lockscren Date Fonts
+        mLockDateFonts = (ListPreference) findPreference(LOCK_DATE_FONTS);
+        mLockDateFonts.setValue(String.valueOf(Settings.System.getInt(
+                getContentResolver(), Settings.System.LOCK_DATE_FONTS, 32)));
+        mLockDateFonts.setSummary(mLockDateFonts.getEntry());
+        mLockDateFonts.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -97,6 +106,12 @@ public class Lockscreen extends SettingsPreferenceFragment implements
                     Integer.valueOf((String) objValue));
             mLockClockFonts.setValue(String.valueOf(objValue));
             mLockClockFonts.setSummary(mLockClockFonts.getEntry());
+            return true;
+        } else if (preference == mLockDateFonts) {
+            Settings.System.putInt(getContentResolver(), Settings.System.LOCK_DATE_FONTS,
+                    Integer.valueOf((String) objValue));
+            mLockDateFonts.setValue(String.valueOf(objValue));
+            mLockDateFonts.setSummary(mLockDateFonts.getEntry());
             return true;
         }
         return false;

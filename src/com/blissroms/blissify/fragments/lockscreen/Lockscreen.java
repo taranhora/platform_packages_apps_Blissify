@@ -64,6 +64,8 @@ public class Lockscreen extends SettingsPreferenceFragment implements
 
     private static final String LOCKSCREEN_CATEGORY = "lockscreen_category";
     private static final String LOCKSCREEN_FOD_CATEGORY = "lockscreen_fod_category";
+    private static final String LOCK_CLOCK_FONTS = "lock_clock_fonts";
+    private ListPreference mLockClockFonts;
     private ContentResolver mResolver;
     private Preference FODSettings;
 
@@ -78,11 +80,25 @@ public class Lockscreen extends SettingsPreferenceFragment implements
         if (!getResources().getBoolean(com.android.internal.R.bool.config_needCustomFODView)) {
             prefScreen.removePreference(FODSettings);
         }
+        // Lockscren Clock Fonts
+        mLockClockFonts = (ListPreference) findPreference(LOCK_CLOCK_FONTS);
+        mLockClockFonts.setValue(String.valueOf(Settings.System.getInt(
+                getContentResolver(), Settings.System.LOCK_CLOCK_FONTS, 34)));
+        mLockClockFonts.setSummary(mLockClockFonts.getEntry());
+        mLockClockFonts.setOnPreferenceChangeListener(this);
 
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object objValue) {
+        ContentResolver resolver = getActivity().getContentResolver();
+        if (preference == mLockClockFonts) {
+            Settings.System.putInt(getContentResolver(), Settings.System.LOCK_CLOCK_FONTS,
+                    Integer.valueOf((String) objValue));
+            mLockClockFonts.setValue(String.valueOf(objValue));
+            mLockClockFonts.setSummary(mLockClockFonts.getEntry());
+            return true;
+        }
         return false;
     }
 
